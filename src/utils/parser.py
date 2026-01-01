@@ -1,12 +1,14 @@
-def parse_file(file):
+from utils.models import Node, ProblemData
+
+
+def parse_file(file:str) -> ProblemData:
     # data variables
-    nodes: list[list[int]] = []
-    demands: list[list[int]] = []
+    nodes: dict[int,Node] = {}
     depot_id: int | None = None
-    dimension: int | None = None
-    truck_capacity: int | None = None
-    dataset_name: str | None = None
-    edge_type: str | None = None
+    dimension: int
+    truck_capacity: int
+    dataset_name: str
+    edge_type: str
 
     # section flags
     is_node: bool = False
@@ -25,12 +27,14 @@ def parse_file(file):
 
             # handle node data
             if is_node and len(words) == 3:
-                nodes.append(list(map(int, words)))
+                id, x, y = list(map(int,words))  # cast all strings to a  list of ints
+                nodes[id] = Node(x,y)
                 continue
 
             # handle demand data
             if is_demand and len(words) == 2:
-                demands.append(list(map(int, words)))
+                id, demand = list(map(int,words))  # cast all strings to a list of ints
+                nodes[id].demand = demand
                 continue
 
             # handle depot data
@@ -77,13 +81,17 @@ def parse_file(file):
             elif key == "EOF":
                 break
 
-        return (
-            nodes,
-            demands,
-            depot_id,
-            dimension,
-            truck_capacity,
-            dataset_name,
-            edge_type,
+        # check for valid depot_id
+        assert depot_id is not None
+
+        # create the ProblemData object
+        problem_data = ProblemData(
+          nodes = nodes,
+          depot_id = depot_id,
+          truck_capacity=truck_capacity,
+          dimension=dimension,
+          dataset=dataset_name,
+          edge_type=edge_type
         )
 
+        return problem_data
