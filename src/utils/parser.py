@@ -1,9 +1,9 @@
 from utils.models import Node, ProblemData
 
 
-def parse_file(file:str) -> ProblemData:
+def parse_file(file: str) -> ProblemData:
     # data variables
-    nodes: dict[int,Node] = {}
+    nodes: dict[int, Node] = {}
     depot_id: int | None = None
     dimension: int
     truck_capacity: int
@@ -27,13 +27,13 @@ def parse_file(file:str) -> ProblemData:
 
             # handle node data
             if is_node and len(words) == 3:
-                id, x, y = list(map(int,words))  # cast all strings to a  list of ints
-                nodes[id] = Node(x,y)
+                id, x, y = list(map(int, words))  # cast all strings to a  list of ints
+                nodes[id] = Node(x, y)
                 continue
 
             # handle demand data
             if is_demand and len(words) == 2:
-                id, demand = list(map(int,words))  # cast all strings to a list of ints
+                id, demand = list(map(int, words))  # cast all strings to a list of ints
                 nodes[id].demand = demand
                 continue
 
@@ -86,12 +86,12 @@ def parse_file(file:str) -> ProblemData:
 
         # create the ProblemData object
         problem_data = ProblemData(
-          nodes = nodes,
-          depot_id = depot_id,
-          truck_capacity=truck_capacity,
-          dimension=dimension,
-          dataset=dataset_name,
-          edge_type=edge_type
+            nodes=nodes,
+            depot_id=depot_id,
+            truck_capacity=truck_capacity,
+            dimension=dimension,
+            dataset=dataset_name,
+            edge_type=edge_type,
         )
 
         return problem_data
