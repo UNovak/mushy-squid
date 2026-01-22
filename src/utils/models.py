@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+import uuid
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -61,3 +62,19 @@ class ProblemData:
             f'  dataset = "{self.dataset}"\n'
             f'  edge_type = "{self.edge_type}"\n'
         )
+
+
+@dataclass
+class Solution:
+    """
+    cost: int
+    routes: list[list[int]]
+    id: str
+    """
+
+    cost: int
+    routes: list[list[int]]
+    id: str = field(default_factory=lambda: str(uuid.uuid4()))
+
+    def __repr__(self) -> str:
+        return f"[{self.cost}, {self.routes}]"
