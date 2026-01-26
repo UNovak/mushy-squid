@@ -1,97 +1,84 @@
-from utils.models import Node, ProblemData
+import numpy as np
+
+from utils.helpers import dist_matrix
+from utils.models import Data
 
 
-def parse_file(file: str) -> ProblemData:
+def parse_file(file: str) -> Data:
     # data variables
-    nodes: dict[int, Node] = {}
-    depot_id: int | None = None
-    dimension: int
-    truck_capacity: int
-    dataset_name: str
-    edge_type: str
+    data = {}
+    ids = []
+    depot_id = 1
 
     # section flags
     is_node: bool = False
     is_demand: bool = False
     is_depot: bool = False
 
-    # opeans a readable stream
+    # opens a readable stream
     with open(file, "r") as stream:
-        for line in stream:
-            # read one line at a time, remove trailing \n, make a list of strings
-            words: list[str] = line.strip().split(" ")
+        for line in stream:  # read one line at a time
+            words: list[str] = line.strip().split()  # remove trailing whitespace and \n
 
             # skip over empty lines
             if not words:
                 continue
 
-            # handle node data
-            if is_node and len(words) == 3:
-                id, x, y = list(map(int, words))  # cast all strings to a  list of ints
-                nodes[id] = Node(x, y)
+            key = words[0].lower().rstrip(":")
+
+            # parse header for data
+            if key in ["type", "dimension", "capacity", "name", "edge_weight_type"]:
+                data[key] = int(words[-1]) if words[-1].isdigit() else words[-1]
                 continue
 
-            # handle demand data
-            if is_demand and len(words) == 2:
-                id, demand = list(map(int, words))  # cast all strings to a list of ints
-                nodes[id].demand = demand
-                continue
-
-            # handle depot data
-            if is_depot:
-                if words[0] == "-1":  # end of depot list
-                    is_depot = False
-                elif words[0] != "-1":  # reading node_id of depot
-                    depot_id = int(words[0])
-
-                continue
-
-            # parsing headers
-            key = words[0]
-
-            # check file data type
-            if key == "TYPE":
-                if len(words) >= 3 and words[2] != "CVRP":
-                    raise ValueError(f"Expected CVRP file type, got: {words[2]}")
-
-            elif key == "NODE_COORD_SECTION":
+            # break after data section
+            if key == "node_coord_section":
                 is_node = True
-
-            elif key == "DEMAND_SECTION":
-                is_demand = True
-                is_node = False
-
-            elif key == "DEPOT_SECTION":
-                is_depot = True
-                is_node = False
-                is_demand = False
-
-            elif key == "DIMENSION":
-                dimension = int(words[2])
-
-            elif key == "CAPACITY":
-                truck_capacity = int(words[2])
-
-            elif key == "NAME":
-                dataset_name = words[2]
-
-            elif key == "EDGE_WEIGHT_TYPE":
-                edge_type = words[2]
-
-            elif key == "EOF":
                 break
 
-        # check for valid depot_id
-        assert depot_id is not None
+        # initialize empty arrays
+        nodes = np.zeros((data["dimension"] + 1, 2), dtype="i")
+        demands = np.zeros(data["dimension"] + 1, dtype="i")
 
-        # create the ProblemData object
-        problem_data = ProblemData(
-            nodes=nodes,
+        for line in stream:
+            words: list[str] = line.strip().split()
+            if not words:
+                continue
+
+            if words[0].isdigit():
+                # words=['10','180','37']
+                if is_node:
+                    id, x, y = map(int, words)
+                    nodes[id] = [x, y]
+                    ids.append(id)
+
+                # words=['8','700']
+                if is_demand:
+                    id, demand = map(int, words)
+                    demands[id] = demand
+
+                if is_depot:
+                    depot_id = int(words[0]) if words[0] != "-1" else depot_id
+
+                continue
+
+            key = words[0].lower().rstrip(":")
+            if key == "demand_section":
+                is_node, is_demand, is_depot = False, True, False
+            if key == "depot_section":
+                is_node, is_demand, is_depot = False, False, True
+            if key == "eof":
+                break
+
+        return Data(
+            capacity=data["capacity"],
+            name=data["name"],
+            edge_type=data["edge_weight_type"],
+            dimension=data["dimension"],
+            type=data["type"],
             depot_id=depot_id,
-            truck_capacity=truck_capacity,
-            dimension=dimension,
-            dataset=dataset_name,
-            edge_type=edge_type,
+            ids=ids[1:],
+            nodes=nodes,
+            demands=demands,
+            distance=dist_matrix(nodes),
         )
-
-        return problem_data
