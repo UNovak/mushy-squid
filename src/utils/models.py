@@ -3,19 +3,6 @@ from dataclasses import dataclass, field
 
 
 @dataclass
-class Node:
-    """
-    x: int
-    y: int
-    demand: int
-    """
-
-    x: int
-    y: int
-    demand: int = 0
-
-
-@dataclass
 class ProblemData:
     """
     nodes: dict[node_id,[id,x,y,demand]]
