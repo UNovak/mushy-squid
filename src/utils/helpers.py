@@ -1,13 +1,13 @@
 import math
 
-from utils.models import Node, ProblemData
+from utils.models import ProblemData
 
 
-def euc(i: Node, j: Node):
+def euc(a: tuple[int, int], b: tuple[int, int]):
     """returns the eucledean distance between two nodes"""
 
-    xd = i.x - j.x  # x coordinate
-    yd = i.y - j.y  # y coordinate
+    xd = a[0] - b[0]  # x coordinate
+    yd = a[1] - b[1]  # y coordinate
     dist = round(math.sqrt(xd * xd + yd * yd))
     return dist
 
