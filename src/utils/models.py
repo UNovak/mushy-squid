@@ -1,54 +1,34 @@
 import uuid
 from dataclasses import dataclass, field
 
+import numpy as np
 
-@dataclass
-class ProblemData:
+
+@dataclass(frozen=True, slots=True)
+class Data:
     """
-    nodes: dict[node_id,[id,x,y,demand]]
-    depot_id: int
-    truck_capacity: int
-    dimension: int
-    dataset: str
+    type: str
+    name: str
     edge_type: str
+    dimension: int
+    capacity: int
+    depot_id: int
+    ids: list[int]
+    nodes: arr[id] = x,y
+    demands: arr[id]= demand
+    distance: arr[from,to]
     """
 
-    nodes: dict[int, Node]
-    depot_id: int
-    truck_capacity: int
-    dimension: int
-    dataset: str
+    type: str
+    name: str
     edge_type: str
-
-    def __repr__(self) -> str:
-        nodes_lines = []
-
-        # Limit to the first 10 nodes
-        items = list(self.nodes.items())
-        for node_id, node in items[:5]:
-            nodes_lines.append(f"    {node_id}, [{node.x}, {node.y}, {node.demand}]")
-
-        # Add "..." and the very last node if there are more than 10 nodes
-        if len(items) > 5:
-            nodes_lines.append("     ...")
-            last_node_id, last_node = items[-1]
-            nodes_lines.append(
-                f"   {last_node_id}, [{last_node.x}, {last_node.y}, {last_node.demand}]"
-            )
-
-        nodes_output = "\n".join(nodes_lines)
-
-        return (
-            f"Problem data:\n"
-            f"  nodes = [\n"
-            f"{nodes_output}\n"
-            f"  ]\n"
-            f"  depot_id = {self.depot_id}\n"
-            f"  truck_capacity = {self.truck_capacity}\n"
-            f"  dimension = {self.dimension}\n"
-            f'  dataset = "{self.dataset}"\n'
-            f'  edge_type = "{self.edge_type}"\n'
-        )
+    dimension: int  # customers + depot
+    capacity: int  # capacity of one truck
+    depot_id: int
+    ids: list[int] = field(repr=False)
+    nodes: np.ndarray  # size(n+1,2)
+    demands: np.ndarray  # size(n+1)
+    distance: np.ndarray  # size(n+1,n+1)
 
 
 @dataclass
