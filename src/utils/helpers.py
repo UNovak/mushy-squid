@@ -1,6 +1,6 @@
 import math
 
-from utils.models import ProblemData
+import numpy as np
 
 
 def euc(a: tuple[int, int], b: tuple[int, int]):
@@ -12,16 +12,14 @@ def euc(a: tuple[int, int], b: tuple[int, int]):
     return dist
 
 
-def all_distances(data: ProblemData) -> dict[int, dict[int, int]]:
-    """returns a dictionary of all distances"""
-    ids = list(data.nodes.keys())
-    result = {}
+def dist_matrix(nodes: np.ndarray) -> np.ndarray:
+    """returns a 2d matrix of distances between nodes"""
+    size = len(nodes)  # n + 1
+    matrix = np.zeros((size, size), dtype="i")  # create empty array
 
-    for key in ids:
-        tmp = {}
-        for id in ids:
-            tmp[id] = euc(data.nodes[id], data.nodes[key])
+    # loop over dist_matrix
+    for i in range(1, size):
+        for j in range(1, size):
+            matrix[i, j] = euc(nodes[i], nodes[j])
 
-        result[key] = tmp
-
-    return result
+    return matrix
