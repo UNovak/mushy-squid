@@ -2,6 +2,8 @@ import math
 
 import numpy as np
 
+from utils.models import Data
+
 
 def euc(a: tuple[int, int], b: tuple[int, int]):
     """returns the eucledean distance between two nodes"""
@@ -23,3 +25,17 @@ def dist_matrix(nodes: np.ndarray) -> np.ndarray:
             matrix[i, j] = euc(nodes[i], nodes[j])
 
     return matrix
+
+
+def route_cost(data: Data, route: list[int]) -> int:
+    """return the total cost of a route"""
+    cost = 0
+    prev = data.depot_id  # set start to depot
+    for id in route:
+        cost += int(data.distance[prev, id])
+        prev = id  # update last visited
+
+    # add cost from route[-1] to depot
+    cost += int(data.distance[prev, data.depot_id])
+    return cost
+
