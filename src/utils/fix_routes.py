@@ -3,17 +3,14 @@ from utils.models import Data
 
 def validate_route(route, visited, data: Data) -> tuple[bool, int, int, int]:
     locals: set[int] = set()
-    capacity = data.capacity  # 100
+    capacity = data.capacity
     cost = 0
     prev = data.depot_id
     for index, id in enumerate(route):
         if capacity - data.demands[id] < 0:
             return False, cost, capacity, index
 
-        if id in visited:
-            return False, cost, capacity, index
-
-        if id in locals:
+        if id in visited or id in locals:
             return False, cost, capacity, index
 
         # no errors, update values
