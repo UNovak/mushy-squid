@@ -21,3 +21,10 @@ def validate_route(route, visited, data: Data) -> tuple[bool, int, int, int]:
 
     cost += data.distance[prev, data.depot_id]
     return True, cost, capacity, len(route)
+
+
+def strip_route(route: list[int], index: int):
+    good_seg = route[:index]
+    bad_seg = route[index:]
+    return good_seg, bad_seg
+
