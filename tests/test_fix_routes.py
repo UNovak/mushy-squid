@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from utils.fix_routes import validate_route
+from utils.fix_routes import strip_route, validate_route
 from utils.models import Data
 
 
@@ -91,3 +91,23 @@ def test_route_validation(sample_data: Data):
     assert status is False
     assert idx == 2
     assert cap == 20
+
+
+def test_strip_route():
+    # setup
+    route = [2, 5, 6]
+
+    # split at index zero
+    good, bad = strip_route(route, 0)
+    assert good == []
+    assert bad == [2, 5, 6]
+
+    # split in the middle
+    good, bad = strip_route(route, 1)
+    assert good == [2]
+    assert bad == [5, 6]
+
+    # split at the end
+    good, bad = strip_route(route, 2)
+    assert good == [2, 5]
+    assert bad == [6]
