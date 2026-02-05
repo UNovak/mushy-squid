@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from utils.fix_routes import find_lowest_cost, strip_route, validate_route
+from utils.fix_routes import complete_seg, find_lowest_cost, strip_route, validate_route
 from utils.models import Data
 
 
@@ -130,3 +130,37 @@ def test_find_lowest_cost(sample_data: Data):
     id, extra_cost = find_lowest_cost(last, available, sample_data)
     assert extra_cost == 4
     assert id == 4
+
+
+def test_complete_seg(sample_data: Data):
+    # setup
+    seg = [2, 6]
+    cost, cap = 5, 40
+
+    # no free nodes
+    free = set()
+    total_cost, complete, unused = complete_seg(cost, cap, seg, free, sample_data)
+    assert total_cost == 8  # 1-2-6-1
+    assert complete == [2, 6]
+    assert not unused
+
+    # free nodes but over capacity
+    free = {3}
+    total_cost, complete, unused = complete_seg(cost, cap, seg, free, sample_data)
+    assert total_cost == 8
+    assert complete == [2, 6]
+    assert 3 in unused
+
+    # valid completion one possible id
+    free = {5}
+    total_cost, complete, unused = complete_seg(cost, cap, seg, free, sample_data)
+    assert total_cost == 18  # 1-2-6-5-1 -> 3+2+5+8
+    assert complete == [2, 6, 5]
+    assert not unused
+
+    # valid completion
+    free = {3, 4, 5}
+    total_cost, complete, unused = complete_seg(cost, cap, seg, free, sample_data)
+    assert total_cost == cost + 13
+    assert complete == [2, 6, 5]
+    assert unused == {3, 4}
