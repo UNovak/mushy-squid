@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from utils.fix_routes import strip_route, validate_route
+from utils.fix_routes import find_lowest_cost, strip_route, validate_route
 from utils.models import Data
 
 
@@ -108,3 +108,25 @@ def test_strip_route():
     good, bad = strip_route(route, 2)
     assert good == [2, 5]
     assert bad == [6]
+
+
+def test_find_lowest_cost(sample_data: Data):
+    last = 5  # 5-1 d=8 c=60
+
+    # same cost
+    available = [6]  # 5-6=5 6-1=3
+    id, cost = find_lowest_cost(last, available, sample_data)
+    assert cost == 5
+    assert id == 6
+
+    # full truck
+    available = []
+    id, cost = find_lowest_cost(last, available, sample_data)
+    assert cost == 0
+    assert id == sample_data.depot_id
+
+    # both nodes work, 2nd one adds less extra cost
+    available = [2, 4]  # 5-2-1 d=10 c=20, 5-4-1 d=9 c=10
+    id, extra_cost = find_lowest_cost(last, available, sample_data)
+    assert extra_cost == 4
+    assert id == 4
