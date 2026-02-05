@@ -60,7 +60,9 @@ def generate_new_route(unvisited: set[int], data: Data, k: int = 3) -> tuple[int
     return cost, route
 
 
-def complete_seg(cost: int, cap: int, seg: list[int], free: set[int], data: Data):
+def complete_seg(
+    cost: int, cap: int, seg: list[int], free: set[int], data: Data
+) -> tuple[int, list[int]]:
     current_cap = cap
     complete = copy.copy(seg)
     total_cost = cost
@@ -83,7 +85,7 @@ def complete_seg(cost: int, cap: int, seg: list[int], free: set[int], data: Data
 
     # truck full or no way to improve
     total_cost += data.distance[complete[-1], data.depot_id]
-    return int(total_cost), complete, free
+    return int(total_cost), complete
 
 
 def find_lowest_cost(start: int, available_ids: list[int], data: Data) -> tuple[int, int]:

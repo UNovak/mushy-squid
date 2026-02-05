@@ -145,31 +145,31 @@ def test_complete_seg(sample_data: Data):
 
     # no free nodes
     free = set()
-    total_cost, complete, unused = complete_seg(cost, cap, seg, free, sample_data)
+    total_cost, complete = complete_seg(cost, cap, seg, free, sample_data)
     assert total_cost == 8  # 1-2-6-1
     assert complete == [2, 6]
-    assert not unused
+    assert not free
 
     # free nodes but over capacity
     free = {3}
-    total_cost, complete, unused = complete_seg(cost, cap, seg, free, sample_data)
+    total_cost, complete = complete_seg(cost, cap, seg, free, sample_data)
     assert total_cost == 8
     assert complete == [2, 6]
-    assert 3 in unused
+    assert free == {3}
 
     # valid completion one possible id
     free = {5}
-    total_cost, complete, unused = complete_seg(cost, cap, seg, free, sample_data)
+    total_cost, complete = complete_seg(cost, cap, seg, free, sample_data)
     assert total_cost == 18  # 1-2-6-5-1 -> 3+2+5+8
     assert complete == [2, 6, 5]
-    assert not unused
+    assert not free
 
     # valid completion
     free = {3, 4, 5}
-    total_cost, complete, unused = complete_seg(cost, cap, seg, free, sample_data)
+    total_cost, complete = complete_seg(cost, cap, seg, free, sample_data)
     assert total_cost == cost + 13
     assert complete == [2, 6, 5]
-    assert unused == {3, 4}
+    assert free == {3, 4}
 
 
 def test_generate_new_route(sample_data: Data):
