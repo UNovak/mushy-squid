@@ -41,7 +41,7 @@ def sample_data() -> Data:
 
 
 def test_route_validation(sample_data: Data):
-    visited = {}
+    visited = {}  # setup
 
     # valid
     valid = [2, 6, 5]
@@ -50,46 +50,43 @@ def test_route_validation(sample_data: Data):
     assert idx == len(valid)
     assert cap == 0
 
+    # exceeded capacity
+    cap_limit = [2, 5, 3]
+    status, _, cap, idx = validate_route(cap_limit, visited, sample_data)
+    assert status is False
+    assert idx == 2
+    assert cap == 20
+
     # local duplicate
-    visited = {}
     local_dup = [6, 5, 6]
     status, _, _, idx = validate_route(local_dup, visited, sample_data)
     assert status is False
     assert idx == 2
 
+    visited = {6}  # setup
+
     # fault at index zero
-    visited = {6}
-    global_dup = [6, 2, 5]
-    status, cost, cap, idx = validate_route(global_dup, visited, sample_data)
+    dup_zero = [6, 2, 5]
+    status, cost, cap, idx = validate_route(dup_zero, visited, sample_data)
     assert status is False
     assert idx == 0
     assert cost == 0
     assert cap == sample_data.capacity
 
     # fault in the middle
-    visited = {6}
-    global_dup = [2, 6, 5]
-    status, cost, cap, idx = validate_route(global_dup, visited, sample_data)
+    dup_middle = [2, 6, 5]
+    status, cost, cap, idx = validate_route(dup_middle, visited, sample_data)
     assert status is False
     assert idx == 1
     assert cost == 3
     assert cap == 60
 
     # fault at last index
-    visited = {6}
-    global_dup = [2, 5, 6]
-    status, cost, cap, idx = validate_route(global_dup, visited, sample_data)
+    dup_end = [2, 5, 6]
+    status, cost, cap, idx = validate_route(dup_end, visited, sample_data)
     assert status is False
     assert idx == 2
     assert cost == 10
-    assert cap == 20
-
-    # exceeded capacity
-    visited = {}
-    cap_limit = [2, 5, 3]
-    status, _, cap, idx = validate_route(cap_limit, visited, sample_data)
-    assert status is False
-    assert idx == 2
     assert cap == 20
 
 
