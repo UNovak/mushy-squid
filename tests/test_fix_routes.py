@@ -1,7 +1,13 @@
 import numpy as np
 import pytest
 
-from utils.fix_routes import complete_seg, find_lowest_cost, strip_route, validate_route
+from utils.fix_routes import (
+    complete_seg,
+    find_lowest_cost,
+    generate_new_route,
+    strip_route,
+    validate_route,
+)
 from utils.models import Data
 
 
@@ -164,3 +170,35 @@ def test_complete_seg(sample_data: Data):
     assert total_cost == cost + 13
     assert complete == [2, 6, 5]
     assert unused == {3, 4}
+
+
+def test_generate_new_route(sample_data: Data):
+
+    # use all available nodes
+    unvisited = {5, 2, 6}
+    cost, route = generate_new_route(unvisited, sample_data, 1)
+    assert route == [2, 6, 5]
+    assert cost == 18
+    assert not unvisited
+
+    # empty unvisited
+    unvisited = set()
+    cost, route = generate_new_route(unvisited, sample_data, k=1)
+    assert route == []
+    assert cost == 0
+
+    # leftover nodes
+    sample_data = dataclasses.replace(sample_data, capacity=110)
+    unvisited = {2, 6, 5, 4}
+    cost, route = generate_new_route(unvisited, sample_data, 1)
+    assert route == [2, 6, 4]
+    assert cost == 12
+    assert unvisited == {5}
+
+    # all demands > capacity
+    sample_data = dataclasses.replace(sample_data, capacity=10)
+    unvisited = {2, 3, 4}  # demands > 10
+    cost, route = generate_new_route(unvisited, sample_data, k=1)
+    assert route == []
+    assert cost == 0
+    assert unvisited == {2, 3, 4}
