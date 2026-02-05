@@ -1,4 +1,5 @@
 import copy
+import random
 
 from utils.models import Data
 
@@ -29,6 +30,34 @@ def strip_route(route: list[int], idx: int):
     good_seg = route[:idx]
     bad_seg = route[idx:]
     return good_seg, bad_seg
+
+
+def generate_new_route(unvisited: set[int], data: Data, k: int = 3) -> tuple[int, list[int]]:
+    cap = data.capacity
+    prev = data.depot_id
+    route = []
+    cost = 0
+
+    while True:
+        available: list[int] = [n for n in unvisited if data.demands[n] <= cap]
+        if not available:
+            break
+
+        available.sort(key=lambda x: data.distance[prev, x])
+
+        # pick from 'k' closest
+        selection_pool = available[:k]
+        id = random.choice(selection_pool)
+
+        # update state
+        route.append(id)
+        unvisited.remove(id)
+        cap -= data.demands[id].item()
+        cost += data.distance[prev, id].item()
+        prev = id
+
+    cost += data.distance[prev, data.depot_id].item()
+    return cost, route
 
 
 def complete_seg(cost: int, cap: int, seg: list[int], free: set[int], data: Data):
