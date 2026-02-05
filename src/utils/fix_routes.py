@@ -3,24 +3,24 @@ from utils.models import Data
 
 def validate_route(route, visited, data: Data) -> tuple[bool, int, int, int]:
     locals: set[int] = set()
-    capacity = data.capacity
+    cap = data.capacity
     cost = 0
     prev = data.depot_id
     for index, id in enumerate(route):
-        if capacity - data.demands[id] < 0:
-            return False, cost, capacity, index
+        if cap - data.demands[id] < 0:
+            return False, cost, cap, index
 
         if id in visited or id in locals:
-            return False, cost, capacity, index
+            return False, cost, cap, index
 
         # no errors, update values
         locals.add(id)
-        capacity -= data.demands[id].item()
+        cap -= data.demands[id].item()
         cost += data.distance[prev, id].item()
         prev = id
 
-    cost += data.distance[prev, data.depot_id]
-    return True, cost, capacity, len(route)
+    cost += data.distance[prev, data.depot_id].item()
+    return True, cost, cap, len(route)
 
 
 def strip_route(route: list[int], index: int):
