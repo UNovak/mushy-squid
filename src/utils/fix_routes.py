@@ -1,3 +1,5 @@
+import copy
+
 from utils.models import Data
 
 
@@ -27,6 +29,32 @@ def strip_route(route: list[int], idx: int):
     good_seg = route[:idx]
     bad_seg = route[idx:]
     return good_seg, bad_seg
+
+
+def complete_seg(cost: int, cap: int, seg: list[int], free: set[int], data: Data):
+    current_cap = cap
+    complete = copy.copy(seg)
+    total_cost = cost
+
+    while True:
+        available = [n for n in free if data.demands[n] <= current_cap]
+        if not available:
+            break
+
+        id, extra_cost = find_lowest_cost(complete[-1], available, data)
+        if id == data.depot_id:  # no better option
+            break
+
+        # update state
+        current_cap -= data.demands[id]
+        total_cost += extra_cost
+        free.remove(id)
+        complete.append(id)
+        last = id
+
+    # truck full or no way to improve
+    total_cost += data.distance[complete[-1], data.depot_id]
+    return int(total_cost), complete, free
 
 
 def find_lowest_cost(start: int, available_ids: list[int], data: Data) -> tuple[int, int]:
