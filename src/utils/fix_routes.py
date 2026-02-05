@@ -6,14 +6,14 @@ def validate_route(route, visited, data: Data) -> tuple[bool, int, int, int]:
     cap = data.capacity
     cost = 0
     prev = data.depot_id
-    for index, id in enumerate(route):
+    for idx, id in enumerate(route):
         if cap - data.demands[id] < 0:
-            return False, cost, cap, index
+            return False, cost, cap, idx
 
         if id in visited or id in locals:
-            return False, cost, cap, index
+            return False, cost, cap, idx
 
-        # no errors, update values
+        # no errors, update state
         locals.add(id)
         cap -= data.demands[id].item()
         cost += data.distance[prev, id].item()
@@ -23,8 +23,8 @@ def validate_route(route, visited, data: Data) -> tuple[bool, int, int, int]:
     return True, cost, cap, len(route)
 
 
-def strip_route(route: list[int], index: int):
-    good_seg = route[:index]
-    bad_seg = route[index:]
+def strip_route(route: list[int], idx: int):
+    good_seg = route[:idx]
+    bad_seg = route[idx:]
     return good_seg, bad_seg
 
