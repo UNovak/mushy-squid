@@ -28,3 +28,23 @@ def strip_route(route: list[int], idx: int):
     bad_seg = route[idx:]
     return good_seg, bad_seg
 
+
+def find_lowest_cost(start: int, available_ids: list[int], data: Data) -> tuple[int, int]:
+    min_delta = float("inf")
+    best_id = data.depot_id
+    old_cost = data.distance[start, best_id]
+
+    # loop over all ids that fit the current capacity
+    for id in available_ids:
+        new_cost = data.distance[start, id] + data.distance[id, data.depot_id]
+        delta = new_cost - old_cost
+
+        if delta < min_delta:
+            min_delta = delta
+            best_id = id
+
+    if best_id == data.depot_id:
+        return best_id, 0
+
+    extra_cost = data.distance[start, best_id].item()
+    return best_id, extra_cost
