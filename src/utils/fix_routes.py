@@ -4,8 +4,8 @@ import random
 from utils.models import Data
 
 
-def validate_route(route, visited, data: Data) -> tuple[bool, int, int, int]:
-    locals: set[int] = set()
+def validate_route(route: list[int], visited: set[int], data: Data) -> tuple[bool, int, int, int]:
+    local_visited: set[int] = set()
     cap = data.capacity
     cost = 0
     prev = data.depot_id
@@ -13,11 +13,11 @@ def validate_route(route, visited, data: Data) -> tuple[bool, int, int, int]:
         if cap - data.demands[id] < 0:
             return False, cost, cap, idx
 
-        if id in visited or id in locals:
+        if id in visited or id in local_visited:
             return False, cost, cap, idx
 
         # no errors, update state
-        locals.add(id)
+        local_visited.add(id)
         cap -= data.demands[id].item()
         cost += data.distance[prev, id].item()
         prev = id

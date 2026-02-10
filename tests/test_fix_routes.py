@@ -47,7 +47,7 @@ def sample_data() -> Data:
 
 
 def test_route_validation(sample_data: Data):
-    visited = {}  # setup
+    visited = set()  # setup
 
     # valid
     valid = [2, 6, 5]
