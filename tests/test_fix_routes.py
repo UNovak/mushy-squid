@@ -1,9 +1,12 @@
+import dataclasses
+
 import numpy as np
 import pytest
 
 from utils.fix_routes import (
     complete_seg,
     find_lowest_cost,
+    fix_routes,
     generate_new_route,
     strip_route,
     validate_route,
@@ -202,3 +205,35 @@ def test_generate_new_route(sample_data: Data):
     assert route == []
     assert cost == 0
     assert unvisited == {2, 3, 4}
+
+
+def test_fix_routes(sample_data: Data):
+
+    # all routes valid
+    routes = [[6, 5], [3], [2, 4]]
+    cost, valid = fix_routes(sample_data, routes)
+    assert valid == [[6, 5], [3], [2, 4]]
+    assert cost == 35
+
+    # duplicates
+    routes = [[6, 5, 2], [3], [2, 4]]
+    cost, valid = fix_routes(sample_data, routes)
+    assert valid == [[6, 5, 2], [3], [4]]
+
+    # capacity limit exceeded
+    routes = [[6, 5, 3], [2, 4]]
+    cost, valid = fix_routes(sample_data, routes)
+    assert [6, 5, 3] not in valid
+    assert [6, 5], [2, 4] in valid
+
+    # missing nodes
+    routes = [[2, 4], [5, 6]]  # id=3 missing
+    cost, valid = fix_routes(sample_data, routes)
+    assert len(valid) == 3  # [[2,4], [5,6], [3]]
+
+    # empty routes
+    routes = [[2, 4]]
+    sample_data = dataclasses.replace(sample_data, capacity=20)
+    cost, valid = fix_routes(sample_data, routes)
+    assert valid == [[6]]  # all other nodes exceed capacity
+    assert [] not in valid
