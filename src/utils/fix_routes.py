@@ -106,3 +106,49 @@ def find_lowest_cost(start: int, available_ids: list[int], data: Data) -> tuple[
 
     extra_cost = data.distance[start, best_id].item()
     return best_id, extra_cost
+
+
+def fix_routes(data: Data, routes: list[list[int]]):
+    visited: set[int] = set()
+    free: set[int] = set()
+    incomplete: list[tuple[int, int, list[int]]] = []
+    total_cost = 0
+    valid = []
+
+    for route in routes:
+        status, cost, cap, idx = validate_route(route, visited, data)
+        if status:
+            total_cost += cost
+            valid.append(route)
+            visited.update(route)
+
+        else:
+            good_seg, bad_seg = strip_route(route, idx)
+
+            for id in bad_seg:
+                if id not in visited:
+                    free.add(id)
+
+            if good_seg:
+                # cache the good part for later
+                incomplete.append((cost, cap, good_seg))
+                visited.update(good_seg)
+
+    # first try to fill the already used trucks
+    if incomplete:
+        for cost, cap, seg in incomplete:
+            complete_cost, complete = complete_seg(cost, cap, seg, free, data)
+            total_cost += complete_cost
+            valid.append(complete)
+
+    # make a set containing never visited nodes and nods we removed from invalid routes
+    unvisited = (set(data.ids) - visited) | free
+    while unvisited:
+        cost, route = generate_new_route(unvisited, data)
+        if route:
+            total_cost += cost
+            valid.append(route)
+        else:
+            break
+
+    return total_cost, valid
