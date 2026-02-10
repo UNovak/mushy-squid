@@ -81,7 +81,6 @@ def complete_seg(
         total_cost += extra_cost
         free.remove(id)
         complete.append(id)
-        last = id
 
     # truck full or no way to improve
     total_cost += data.distance[complete[-1], data.depot_id]
