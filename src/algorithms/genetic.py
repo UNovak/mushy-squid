@@ -2,8 +2,8 @@ import math
 import random
 
 from utils.fix_routes import fix_routes
-from utils.models import Data
 from utils.helpers import seq_to_routes
+from utils.models import Data, Solution
 
 
 def generate_individual(data: Data) -> list[list[int]]:
@@ -77,7 +77,10 @@ def crossover(data: Data, p1: list[list[int]], p2: list[list[int]]) -> list[int]
 
 
 def run(data: Data):
-    population = []
+    generations: int = 100
+    tournament_size = 3
+    mutation_rate: float = 0.1
+    population: list[tuple[int, list[list[int]]]] = []
     tracker = []  # keep track of optimal solutions
 
     # scale the population size based on input
@@ -89,4 +92,35 @@ def run(data: Data):
         cost, fixed_individual = fix_routes(data, individual)
         population.append((cost, fixed_individual))
 
-    return population
+    # sort the initial population
+    population.sort(key=lambda x: x[0])
+
+    # store the best solution
+    min_cost = population[0][0]
+    print(f"initial population best: {population[0]}")
+
+    # main loop
+    for generation in range(generations):
+        next_gen = []
+
+        # elitism
+        elite_count = population_size // 10
+        next_gen.extend(population[:elite_count])
+
+        # create the next generation
+        for _ in range(population_size - elite_count):
+            p1, p2 = tournament_selection(population, tournament_size)
+            child_seq = crossover(data, p1, p2)  # create a new solution
+            child = mutate(data, child_seq, mutation_rate)  # mutate the solution
+            child = fix_routes(data, child)  # fix the solution, calculate cost
+            next_gen.append(child)
+
+        # sort next_gen and update the population
+        population = sorted(next_gen, key=lambda x: x[0])[:population_size]
+
+        # check for new best solution
+        if population[0][0] < min_cost:
+            min_cost = population[0][0]  # update min_cost
+            tracker.append((generation, population[0]))  # store current best solution
+
+    return Solution(population[0][0], population[0][1])
