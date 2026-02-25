@@ -41,6 +41,34 @@ def route_cost(data: Data, route: list[int]) -> int:
     return cost
 
 
+def seq_to_routes(data: Data, seq: list[int]) -> list[list[int]]:
+    """takes a single sequence and greedily splits it based on capacity. Returns a set of routes"""
+    routes = []
+    capacity = data.capacity
+    start = 0
+
+    if capacity == 0:
+        return []
+
+    for i, id in enumerate(seq):
+        if capacity - data.demands[id] < 0:
+            routes.append(seq[start:i])
+            capacity = data.capacity - data.demands[id]
+            start = i
+        else:
+            capacity -= data.demands[id]
+
+    # always add the last route
+    if start < len(seq):
+        routes.append(seq[start:])
+
+    return routes
+
+
+def routes_to_seq():
+    pass
+
+
 def type_print(data: Data, s: Solution) -> None:
     """prints all of the variables and the responding types"""
 
