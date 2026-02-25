@@ -31,11 +31,19 @@ def generate_individual(data: Data) -> list[list[int]]:
 
 def mutate():
     pass
+def tournament_selection(population, size=3) -> tuple[list[list[int]], list[list[int]]]:
+    """returns the two cheapest sets of routes from each grup"""
 
+    def select_best():
+        """returns the cheapest set of routes from the tournament_grup"""
+        group = random.sample(population, size)  # randomly select #size from population
+        winner = min(group, key=lambda x: x[0])  # pick the lowest total cost
+        return winner[1]  # return only the routesa
 
-def tournament_selection():
-    pass
+    p1 = select_best()
+    p2 = select_best()
 
+    return p1, p2
 
 def crossover():
     pass
