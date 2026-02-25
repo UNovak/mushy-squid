@@ -52,8 +52,28 @@ def tournament_selection(population, size=3) -> tuple[list[list[int]], list[list
 
     return p1, p2
 
-def crossover():
-    pass
+
+def crossover(data: Data, p1: list[list[int]], p2: list[list[int]]) -> list[int]:
+    """takes two sets of routes and returns a the child as a single sequence"""
+    # flatten the routes
+    seq1: list[int] = [id for route in p1 for id in route]
+    seq2: list[int] = [id for route in p2 for id in route]
+    size = len(seq1)
+    child = [0] * size  # empty array to fill using crossover
+
+    # ordered crossover
+    start, end = random.sample(range(size), 2)  # pick two random points
+    child[start:end] = seq1[start:end]  # add selected part from p1
+
+    # fill the child with remaining nodes from seq2
+    seq2 = [x for x in seq2 if x not in child]
+    idx = 0
+    for i in range(size):
+        if child[i] is None:
+            child[i] = seq2[idx]
+            idx += 1
+
+    return child
 
 
 def run(data: Data):
