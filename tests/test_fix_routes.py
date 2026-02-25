@@ -1,8 +1,5 @@
 import dataclasses
 
-import numpy as np
-import pytest
-
 from utils.fix_routes import (
     complete_seg,
     find_lowest_cost,
@@ -11,45 +8,9 @@ from utils.fix_routes import (
     strip_route,
     validate_route,
 )
-from utils.models import Data
 
 
-@pytest.fixture
-def sample_data() -> Data:
-    return Data(
-        capacity=100,
-        name="test",
-        edge_type="EUC_2D",
-        dimension=4,
-        type="CVRP",
-        depot_id=1,
-        ids=[2, 3, 4, 5, 6],
-        nodes=np.array([[0, 0], [0, 0], [0, 3], [4, 0], [3, 4], [7, 3], [2, 2]], dtype="i"),
-        demands=np.array(
-            [
-                0,
-                0,  # 1
-                40,  # 2
-                70,  # 3
-                50,  # 4
-                40,  # 5
-                20,  # 6
-            ],
-            dtype="i",
-        ),
-        distance=np.array([
-            [0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 3, 4, 5, 8, 3],
-            [0, 3, 0, 5, 3, 7, 2],
-            [0, 4, 5, 0, 4, 4, 3],
-            [0, 5, 3, 4, 0, 4, 2],
-            [0, 8, 7, 4, 4, 0, 5],
-            [0, 3, 2, 3, 2, 5, 0],
-        ]),
-    )
-
-
-def test_route_validation(sample_data: Data):
+def test_route_validation(sample_data):
     visited = set()  # setup
 
     # valid
@@ -119,7 +80,7 @@ def test_strip_route():
     assert bad == [6]
 
 
-def test_find_lowest_cost(sample_data: Data):
+def test_find_lowest_cost(sample_data):
     last = 5  # 5-1 d=8 c=60
 
     # same cost
@@ -141,7 +102,7 @@ def test_find_lowest_cost(sample_data: Data):
     assert id == 4
 
 
-def test_complete_seg(sample_data: Data):
+def test_complete_seg(sample_data):
     # setup
     seg = [2, 6]
     cost, cap = 5, 40
@@ -175,7 +136,7 @@ def test_complete_seg(sample_data: Data):
     assert free == {3, 4}
 
 
-def test_generate_new_route(sample_data: Data):
+def test_generate_new_route(sample_data):
 
     # use all available nodes
     unvisited = {5, 2, 6}
@@ -207,7 +168,7 @@ def test_generate_new_route(sample_data: Data):
     assert unvisited == {2, 3, 4}
 
 
-def test_fix_routes(sample_data: Data):
+def test_fix_routes(sample_data):
 
     # all routes valid
     routes = [[6, 5], [3], [2, 4]]
