@@ -3,6 +3,7 @@ import random
 
 from utils.fix_routes import fix_routes
 from utils.models import Data
+from utils.helpers import seq_to_routes
 
 
 def generate_individual(data: Data) -> list[list[int]]:
@@ -29,8 +30,14 @@ def generate_individual(data: Data) -> list[list[int]]:
     return routes
 
 
-def mutate():
-    pass
+def mutate(data, seq: list[int], rate) -> list[list[int]]:
+    """takes a sequence and mutates it, returns the new sequence"""
+    if random.random() < rate:
+        idx1, idx2 = random.sample(range(len(seq)), 2)
+        seq[idx1], seq[idx2] = seq[idx2], seq[idx1]
+    return seq_to_routes(data, seq)
+
+
 def tournament_selection(population, size=3) -> tuple[list[list[int]], list[list[int]]]:
     """returns the two cheapest sets of routes from each grup"""
 
