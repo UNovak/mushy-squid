@@ -39,13 +39,13 @@ def mutate(data, seq: list[int], rate) -> list[list[int]]:
 
 
 def tournament_selection(population, size=3) -> tuple[list[list[int]], list[list[int]]]:
-    """returns the two cheapest sets of routes from each grup"""
+    """returns the two cheapest sets of routes from each group"""
 
     def select_best():
-        """returns the cheapest set of routes from the tournament_grup"""
+        """returns the cheapest set of routes from the tournament_group"""
         group = random.sample(population, size)  # randomly select #size from population
         winner = min(group, key=lambda x: x[0])  # pick the lowest total cost
-        return winner[1]  # return only the routesa
+        return winner[1]  # return only the routes
 
     p1 = select_best()
     p2 = select_best()

@@ -7,7 +7,7 @@ from utils.models import Data, Solution
 
 
 def euc(a: tuple[int, int], b: tuple[int, int]):
-    """returns the eucledean distance between two nodes"""
+    """returns the euclidean distance between two nodes"""
 
     xd = a[0] - b[0]  # x coordinate
     yd = a[1] - b[1]  # y coordinate
