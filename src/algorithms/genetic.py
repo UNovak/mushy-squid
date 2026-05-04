@@ -1,44 +1,41 @@
 import math
 import random
 
-from utils.fix_routes import fix_routes
-from utils.helpers import seq_to_routes
+from utils.ga_helpers import validate_seq
 from utils.models import Data, Solution
 
 
-def generate_individual(data: Data) -> list[list[int]]:
     """returns one randomly generated solution"""
+def generate_individual(data: Data) -> list[int]:
     unvisited = set(data.ids)  # get all customer node_ids
-    routes: list[list[int]] = []
+    seq: list[int] = []
 
     while unvisited:
         current_capacity = data.capacity
         possible_customer = list(unvisited)
-        route: list[int] = []  # path of one vehicle
 
         while possible_customer:
             id = random.choice(possible_customer)  # pick a random node
             current_capacity -= data.demands[id]  # update truck capacity
-            route.append(id)  # add id to path
+            seq.append(id)  # add id to path
             unvisited.remove(id)  # mark node as visited, remove it from set
 
             # update possible customers based on unvisited nodes and remaining truck capacity
             possible_customer = [id for id in unvisited if data.demands[id] <= current_capacity]
 
-        # unvisited nodes, no possible customer
-        routes.append(route)
-    return routes
+    return seq
 
 
-def mutate(data, seq: list[int], rate) -> list[list[int]]:
     """takes a sequence and mutates it, returns the new sequence"""
+def mutate(data, seq: list[int], rate) -> list[int]:
     if random.random() < rate:
         idx1, idx2 = random.sample(range(len(seq)), 2)
         seq[idx1], seq[idx2] = seq[idx2], seq[idx1]
-    return seq_to_routes(data, seq)
+
+    return seq
 
 
-def tournament_selection(population, size=3) -> tuple[list[list[int]], list[list[int]]]:
+def tournament_selection(population, size=3) -> tuple[list[int], list[int]]:
     """returns the two cheapest sets of routes from each group"""
 
     def select_best():
@@ -53,11 +50,11 @@ def tournament_selection(population, size=3) -> tuple[list[list[int]], list[list
     return p1, p2
 
 
-def crossover(data: Data, p1: list[list[int]], p2: list[list[int]]) -> list[int]:
     """takes two sets of routes and returns a the child as a single sequence"""
-    # flatten the routes
-    seq1: list[int] = [id for route in p1 for id in route]
-    seq2: list[int] = [id for route in p2 for id in route]
+def crossover(data: Data, p1: list[int], p2: list[int]) -> list[int]:
+    # remove depot ids
+    seq1: list[int] = [id for id in p1 if id != data.depot_id]
+    seq2: list[int] = [id for id in p2 if id != data.depot_id]
     size = len(seq1)
     child = [0] * size  # empty array to fill using crossover
 
@@ -76,11 +73,8 @@ def crossover(data: Data, p1: list[list[int]], p2: list[list[int]]) -> list[int]
     return child
 
 
-def run(data: Data):
-    generations: int = 100
-    tournament_size = 3
-    mutation_rate: float = 0.1
-    population: list[tuple[int, list[list[int]]]] = []
+def run(data: Data, generations: int = 100, tournament_size=3, mutation_rate: float = 0.3):
+    population: list[tuple[int, list[int]]] = []
     tracker = []  # keep track of optimal solutions
 
     # scale the population size based on input
@@ -89,15 +83,14 @@ def run(data: Data):
     # randomly generate the initial population
     for _ in range(population_size):
         individual = generate_individual(data)
-        cost, fixed_individual = fix_routes(data, individual)
-        population.append((cost, fixed_individual))
+        cost, valid_individual = validate_seq(data, individual)
+        population.append((cost, valid_individual))
 
     # sort the initial population
     population.sort(key=lambda x: x[0])
 
     # store the best solution
     min_cost = population[0][0]
-    print(f"initial population best: {population[0]}")
 
     # main loop
     for generation in range(generations):
@@ -112,7 +105,7 @@ def run(data: Data):
             p1, p2 = tournament_selection(population, tournament_size)
             child_seq = crossover(data, p1, p2)  # create a new solution
             child = mutate(data, child_seq, mutation_rate)  # mutate the solution
-            child = fix_routes(data, child)  # fix the solution, calculate cost
+            child = validate_seq(data, child)  # fix the solution, calculate cost
             next_gen.append(child)
 
         # sort next_gen and update the population
