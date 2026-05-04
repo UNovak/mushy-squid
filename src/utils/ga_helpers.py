@@ -4,6 +4,13 @@ from utils.models import Data
 
 
 def new_seq(unvisited: set[int], data: Data, k: int = 3) -> tuple[int, list[int]]:
+    """
+    Takes a set of unvisited nodes, data and parameter k.
+    k=1: greedy, always picks the closest available node.
+    k=3: semi-random, pick from k closest nodes.
+    Default k=3.
+    Returns: (cost, [1,2,4,1,5,6,1])
+    """
     cap = data.capacity
     prev = data.depot_id
     seq = []
@@ -37,6 +44,11 @@ def new_seq(unvisited: set[int], data: Data, k: int = 3) -> tuple[int, list[int]
 
 
 def validate_seq(data: Data, seq: list[int]) -> tuple[int, list[int]]:
+    """
+    Takes a sequence [2,4,5,6].
+    Returns a full sequence with depot id as route separator and cost.
+    Returns: (cost, [1,2,4,1,5,6,1]).
+    """
     cap = data.capacity
     prev = data.depot_id
     cost = 0

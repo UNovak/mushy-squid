@@ -5,8 +5,11 @@ from utils.ga_helpers import validate_seq
 from utils.models import Data, Solution
 
 
-    """returns one randomly generated solution"""
 def generate_individual(data: Data) -> list[int]:
+    """
+    Returns one randomly generated solution.
+    seq: [2,4,5,3,6]
+    """
     unvisited = set(data.ids)  # get all customer node_ids
     seq: list[int] = []
 
@@ -26,8 +29,11 @@ def generate_individual(data: Data) -> list[int]:
     return seq
 
 
-    """takes a sequence and mutates it, returns the new sequence"""
 def mutate(data, seq: list[int], rate) -> list[int]:
+    """
+    Takes a sequence and mutates it.
+    Returns the new sequence [2,5,3,4,6]
+    """
     if random.random() < rate:
         idx1, idx2 = random.sample(range(len(seq)), 2)
         seq[idx1], seq[idx2] = seq[idx2], seq[idx1]
@@ -50,8 +56,12 @@ def tournament_selection(population, size=3) -> tuple[list[int], list[int]]:
     return p1, p2
 
 
-    """takes two sets of routes and returns a the child as a single sequence"""
 def crossover(data: Data, p1: list[int], p2: list[int]) -> list[int]:
+    """
+    Takes two sets of routes.
+    Returns a the child as a single sequence
+    seq: [2,4,5,3,6]
+    """
     # remove depot ids
     seq1: list[int] = [id for id in p1 if id != data.depot_id]
     seq2: list[int] = [id for id in p2 if id != data.depot_id]
