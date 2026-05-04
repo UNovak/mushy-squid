@@ -104,7 +104,7 @@ def run(data: Data, generations: int = 100, tournament_size=3, mutation_rate: fl
     min_cost = population[0][0]
 
     # main loop
-    for generation in range(generations):
+    for generation in range(generations - 1):
         next_gen = []
 
         # elitism
