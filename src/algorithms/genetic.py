@@ -76,7 +76,8 @@ def crossover(data: Data, p1: list[int], p2: list[int]) -> list[int]:
     seq2 = [x for x in seq2 if x not in child]
     idx = 0
     for i in range(size):
-        if child[i] is None:
+        # skip over the part populated from p1
+        if child[i] == 0:
             child[i] = seq2[idx]
             idx += 1
 
