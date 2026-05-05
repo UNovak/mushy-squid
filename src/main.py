@@ -1,11 +1,12 @@
 import utils.parser as parser
 from algorithms import ant, genetic
+from utils.helpers import validate_solution
 
 data = parser.parse_file("./data/E-n22-k4.vrp")
 
 # run the algorithms
-ga_solution = genetic.run(data)
-print(f"GA solution={ga_solution}")
+ga_solution = validate_solution(data, genetic.run(data))
+print(f"{ga_solution}")
 
-ac_solution = ant.run(data)
-print(f"AC solution={ac_solution}")
+ac_solution = validate_solution(data, ant.run(data))
+print(f"{ac_solution}")

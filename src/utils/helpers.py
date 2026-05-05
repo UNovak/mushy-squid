@@ -2,6 +2,8 @@ import math
 
 import numpy as np
 
+from utils.models import Data, Solution
+
 
 def euc(a: tuple[int, int], b: tuple[int, int]):
     """returns the euclidean distance between two nodes"""
@@ -23,3 +25,28 @@ def dist_matrix(nodes: np.ndarray) -> np.ndarray:
             matrix[i, j] = euc(nodes[i], nodes[j])
 
     return matrix
+
+
+def validate_solution(data: Data, solution: Solution) -> Solution:
+    seq_cost = solution.cost
+    seq = solution.seq
+    visited = set()
+    cost = 0
+    cap = data.capacity
+    prev = data.depot_id
+
+    for id in seq:
+        if id != data.depot_id:
+            assert id not in visited, f"Duplicated customer: {id}"
+            assert data.demands[id] <= cap, f"Capacity violated at node {id}"
+            visited.add(id)
+            cap -= data.demands[id]
+        else:
+            cap = data.capacity
+        cost += data.distance[prev, id]
+        prev = id
+
+    assert visited == set(data.ids), f"Unvisited nodes: {set(data.ids) - visited}"
+    assert round(cost) == round(seq_cost), f"Cost mismatch: stored={seq_cost}, computed={cost}\n"
+
+    return solution
