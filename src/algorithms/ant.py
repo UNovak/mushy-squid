@@ -89,7 +89,7 @@ def traverse(data: Data, scores) -> tuple[int, list[int]]:
         cost += data.distance[seq[-1], data.depot_id]
         seq.append(data.depot_id)  # return to depot
 
-    return cost, seq
+    return int(cost), seq
 
 
 def update_pheromones(data: Data, pheromones: np.ndarray, ants, evaporation=0.2) -> np.ndarray:

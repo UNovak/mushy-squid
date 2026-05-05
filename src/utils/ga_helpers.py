@@ -85,4 +85,4 @@ def validate_seq(data: Data, seq: list[int]) -> tuple[int, list[int]]:
     cost += data.distance[prev, data.depot_id]
     res.append(data.depot_id)
 
-    return (cost, res)
+    return (int(cost), res)
