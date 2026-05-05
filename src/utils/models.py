@@ -1,5 +1,6 @@
 import uuid
 from dataclasses import dataclass, field
+from typing import Optional
 
 import numpy as np
 
@@ -35,13 +36,15 @@ class Data:
 class Solution:
     """
     cost: int
-    routes: list[list[int]]
+    seq: list[int]
+    algorithm: str | None
     id: str
     """
 
     cost: int
-    routes: list[list[int]]
+    seq: list[int]
+    algorithm: Optional[str] = None
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
 
     def __repr__(self) -> str:
-        return f"[{self.cost}, {self.routes}]"
+        return f"cost={self.cost}, seq={self.seq}, algorithm={self.algorithm}"
