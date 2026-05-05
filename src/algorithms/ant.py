@@ -116,6 +116,42 @@ def update_pheromones(data: Data, pheromones: np.ndarray, ants, evaporation=0.2)
     return pheromones
 
 
+def hybrid(
+    data: Data,
+    iterations: int = 100,
+    alpha: float = 0.5,
+    beta: float = 1.0,
+    pheromones: np.ndarray | None = None,
+) -> tuple[list[tuple[float, list[int]]], np.ndarray]:
+    """returns better half of sorted an and pheromone matrix"""
+    size = len(data.nodes)
+    ant_count = math.floor(data.dimension / 2)
+
+    # Initialize matrices
+    # skip pheromone matrix if passes as parameter
+    if pheromones is None:
+        pheromones = pheromone_matrix(size)
+
+    # compute score and heuristics matrices
+    heuristics = heuristic_matrix(data, beta)
+    scores = score_matrix(size, pheromones, heuristics, alpha)
+
+    # main loop
+    for iteration in range(iterations):
+        ants = []
+        for ant in range(ant_count):
+            ant = traverse(data, scores)
+            ants.append(ant)
+
+        # update pheromone matrix and the scores matrix
+        pheromones = update_pheromones(data, pheromones, ants)
+        scores = score_matrix(size, pheromones, heuristics, alpha)
+
+    # sort ants by cost
+    ants.sort(key=lambda x: x[0])
+    return ants[: int(len(ants) / 2)], pheromones
+
+
 def run(data: Data, iterations: int = 100, alpha: float = 0.5, beta: float = 1.0):
     size = len(data.nodes)
     ant_count = math.floor(data.dimension / 2)

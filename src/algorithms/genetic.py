@@ -84,6 +84,53 @@ def crossover(data: Data, p1: list[int], p2: list[int]) -> list[int]:
     return child
 
 
+def hybrid(
+    data: Data,
+    generations: int = 100,
+    tournament_size=3,
+    mutation_rate: float = 0.3,
+    population: list[tuple[float, list[int]]] | None = None,
+) -> list[tuple[float, list[int]]]:
+    """returns better half of the sorted population"""
+
+    # scale the population size based on input
+    population_size = math.floor((data.dimension / 2))
+
+    # if initial population not provided
+    # randomly generate the initial population
+    if population is None:
+        population = []
+        generations += 1
+        for _ in range(population_size):
+            individual = generate_individual(data)  # [2,3,4,5]
+            cost, valid_individual = validate_seq(data, individual)  # (int, [1,2,3,1,4,5,1])
+            population.append((cost, valid_individual))
+
+        # sort the initial population
+        population.sort(key=lambda x: x[0])
+
+    # main loop
+    for generation in range(generations - 1):
+        next_gen = []
+
+        # elitism
+        elite_count = population_size // 10
+        next_gen.extend(population[:elite_count])
+
+        # create the next generation
+        for _ in range(population_size - elite_count):
+            p1, p2 = tournament_selection(population, tournament_size)
+            child_seq = crossover(data, p1, p2)  # create a new solution
+            child = mutate(data, child_seq, mutation_rate)  # mutate the solution
+            child = validate_seq(data, child)  # fix the solution, calculate cost
+            next_gen.append(child)
+
+        # sort next_gen and update the population
+        population = sorted(next_gen, key=lambda x: x[0])[:population_size]
+
+    return population[: int(len(population) // 2)]
+
+
 def run(data: Data, generations: int = 100, tournament_size=3, mutation_rate: float = 0.3):
     population: list[tuple[int, list[int]]] = []
     tracker = []  # keep track of optimal solutions
