@@ -6,7 +6,7 @@ def run(data: Data, iterations: int = 100, step: int = 10):
 
     # init both algorithms
     ga = genetic.hybrid(data, generations=step)
-    ants, pheromones = ant.hybrid(data, iterations=step)
+    ants, pheromones, memorized_heuristics = ant.hybrid(data, iterations=step)
     best = min(ga[0], ants[0], key=lambda x: x[0])  # both list[cost,seq]
 
     # main loop
@@ -20,7 +20,9 @@ def run(data: Data, iterations: int = 100, step: int = 10):
 
         # pass the matrix to ac and population to ga
         ga = genetic.hybrid(data, generations=step, population=combined)
-        ants, pheromones = ant.hybrid(data, iterations=step, pheromones=new_pheromones)
+        ants, pheromones, _ = ant.hybrid(
+            data, iterations=step, pheromones=new_pheromones, heuristics=memorized_heuristics
+        )
 
         step_best = min(ga[0], ants[0], key=lambda x: x[0])
         if step_best[0] < best[0]:

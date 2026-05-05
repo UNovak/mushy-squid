@@ -122,18 +122,22 @@ def hybrid(
     alpha: float = 0.5,
     beta: float = 1.0,
     pheromones: np.ndarray | None = None,
-) -> tuple[list[tuple[float, list[int]]], np.ndarray]:
+    heuristics: np.ndarray | None = None,
+) -> tuple[list[tuple[float, list[int]]], np.ndarray, np.ndarray]:
     """returns better half of sorted an and pheromone matrix"""
     size = len(data.nodes)
     ant_count = math.floor(data.dimension / 2)
 
     # Initialize matrices
-    # skip pheromone matrix if passes as parameter
+    # skip recalculating pheromones if passed as params
     if pheromones is None:
         pheromones = pheromone_matrix(size)
 
-    # compute score and heuristics matrices
-    heuristics = heuristic_matrix(data, beta)
+    # skip recalculating heuristics if passed as params
+    if heuristics is None:
+        heuristics = heuristic_matrix(data, beta)
+
+    # compute score matrix
     scores = score_matrix(size, pheromones, heuristics, alpha)
 
     # main loop
@@ -149,7 +153,7 @@ def hybrid(
 
     # sort ants by cost
     ants.sort(key=lambda x: x[0])
-    return ants[: int(len(ants) / 2)], pheromones
+    return ants[: int(len(ants) / 2)], pheromones, heuristics
 
 
 def run(data: Data, iterations: int = 100, alpha: float = 0.5, beta: float = 1.0):
