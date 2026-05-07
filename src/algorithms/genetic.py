@@ -2,6 +2,7 @@ import math
 import random
 
 from utils.ga_helpers import validate_seq
+from utils.helpers import timer
 from utils.models import Data, Solution
 
 
@@ -131,6 +132,7 @@ def hybrid(
     return population[: int(len(population) // 2)]
 
 
+@timer
 def run(data: Data, generations: int = 100, tournament_size=3, mutation_rate: float = 0.3):
     population: list[tuple[int, list[int]]] = []
     tracker = []  # keep track of optimal solutions
