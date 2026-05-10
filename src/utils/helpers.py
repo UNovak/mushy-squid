@@ -1,4 +1,6 @@
 import math
+from functools import wraps
+from time import time
 
 import numpy as np
 
@@ -50,3 +52,15 @@ def validate_solution(data: Data, solution: Solution) -> Solution:
     assert round(cost) == round(seq_cost), f"Cost mismatch: stored={seq_cost}, computed={cost}\n"
 
     return solution
+
+
+def timer(func):
+    @wraps(func)
+    def wrap_func(*args, **kwargs):
+        t1 = time()
+        result = func(*args, **kwargs)
+        t2 = time()
+        print(f"{func.__module__}.{func.__name__!r} executed in {(t2 - t1):.6f}s")
+        return result
+
+    return wrap_func

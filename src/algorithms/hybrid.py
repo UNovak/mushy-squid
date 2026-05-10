@@ -1,7 +1,9 @@
 from algorithms import ant, genetic
+from utils.helpers import timer
 from utils.models import Data, Solution
 
 
+@timer
 def run(data: Data, iterations: int = 100, step: int = 10):
 
     # init both algorithms
