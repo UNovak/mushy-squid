@@ -13,6 +13,9 @@ if seed := cfg.get("seed"):
 file = "./data/E-n22-k4.vrp"
 data = loader.load(file)
 
+if seed := cfg.get("seed"):
+    random.seed(seed)
+
 # run the algorithms
 ac = ant.run(data, iterations, **cfg["ac"])
 
