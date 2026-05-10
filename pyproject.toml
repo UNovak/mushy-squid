@@ -9,6 +9,7 @@ description = "CVRP solver"
 dependencies = [
     "numpy",
     "pyyaml>=6.0.3",
+    "tsplib95>=0.7.1",
 ]
 
 [tool.hatch.build.targets.wheel]
