@@ -1,3 +1,5 @@
+import random
+
 import utils.parser as parser
 from algorithms import ant, genetic, hybrid
 from utils import config
@@ -6,6 +8,9 @@ from utils.helpers import validate_solution
 cfg = config.load()
 iterations = cfg["iterations"]
 data = parser.parse_file("./data/E-n22-k4.vrp")
+
+if seed := cfg.get("seed"):
+    random.seed(seed)
 
 # run the algorithms
 ga_solution = validate_solution(data, genetic.run(data, iterations, **cfg["ga"]))
