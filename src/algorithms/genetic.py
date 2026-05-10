@@ -87,7 +87,7 @@ def crossover(data: Data, p1: list[int], p2: list[int]) -> list[int]:
 
 def hybrid(
     data: Data,
-    generations: int = 100,
+    iterations: int = 100,
     tournament_size=3,
     mutation_rate: float = 0.3,
     population: list[tuple[float, list[int]]] | None = None,
@@ -101,7 +101,7 @@ def hybrid(
     # randomly generate the initial population
     if population is None:
         population = []
-        generations += 1
+        iterations += 1
         for _ in range(population_size):
             individual = generate_individual(data)  # [2,3,4,5]
             cost, valid_individual = validate_seq(data, individual)  # (int, [1,2,3,1,4,5,1])
@@ -111,7 +111,7 @@ def hybrid(
         population.sort(key=lambda x: x[0])
 
     # main loop
-    for generation in range(generations - 1):
+    for iteration in range(iterations - 1):
         next_gen = []
 
         # elitism
@@ -133,7 +133,7 @@ def hybrid(
 
 
 @timer
-def run(data: Data, generations: int = 100, tournament_size=3, mutation_rate: float = 0.3):
+def run(data: Data, iterations: int = 100, tournament_size=3, mutation_rate: float = 0.3):
     population: list[tuple[int, list[int]]] = []
     tracker = []  # keep track of optimal solutions
 
@@ -153,7 +153,7 @@ def run(data: Data, generations: int = 100, tournament_size=3, mutation_rate: fl
     min_cost = population[0][0]
 
     # main loop
-    for generation in range(generations - 1):
+    for iteration in range(iterations - 1):
         next_gen = []
 
         # elitism
@@ -174,6 +174,6 @@ def run(data: Data, generations: int = 100, tournament_size=3, mutation_rate: fl
         # check for new best solution
         if population[0][0] < min_cost:
             min_cost = population[0][0]  # update min_cost
-            tracker.append((generation, population[0]))  # store current best solution
+            tracker.append((iteration, population[0]))  # store current best solution
 
     return Solution(population[0][0], population[0][1])

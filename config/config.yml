@@ -1,0 +1,13 @@
+seed: 100
+iterations: 100
+
+ga:
+  tournament_size: 3
+  mutation_rate: 0.6
+
+ac:
+  alpha: 1.0
+  beta: 1.0
+
+ha:
+  step: 10
