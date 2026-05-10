@@ -6,7 +6,10 @@ build-backend = "hatchling.build"
 name = "mushy-squid"
 version = "0.1.0"
 description = "CVRP solver"
-dependencies = ["numpy"]
+dependencies = [
+    "numpy",
+    "pyyaml>=6.0.3",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
