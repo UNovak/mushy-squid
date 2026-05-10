@@ -7,7 +7,7 @@ from utils.models import Data, Solution
 def run(data: Data, iterations: int = 100, step: int = 10):
 
     # init both algorithms
-    ga = genetic.hybrid(data, generations=step)
+    ga = genetic.hybrid(data, iterations=step)
     ants, pheromones, memorized_heuristics = ant.hybrid(data, iterations=step)
     best = min(ga[0], ants[0], key=lambda x: x[0])  # both list[cost,seq]
 
@@ -21,7 +21,7 @@ def run(data: Data, iterations: int = 100, step: int = 10):
         new_pheromones = ant.update_pheromones(data, pheromones, ga)
 
         # pass the matrix to ac and population to ga
-        ga = genetic.hybrid(data, generations=step, population=combined)
+        ga = genetic.hybrid(data, iterations=step, population=combined)
         ants, pheromones, _ = ant.hybrid(
             data, iterations=step, pheromones=new_pheromones, heuristics=memorized_heuristics
         )
