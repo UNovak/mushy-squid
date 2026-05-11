@@ -47,6 +47,7 @@ def score_matrix(size: int, pheromones, heuristics, alpha: float) -> np.ndarray:
         for j in range(size):
             matrix[i, j] = (pheromones[i, j] ** alpha) * heuristics[i, j]
 
+    np.clip(matrix, 0.001, None, out=matrix)
     return matrix
 
 
