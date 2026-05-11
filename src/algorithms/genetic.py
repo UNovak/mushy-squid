@@ -47,7 +47,8 @@ def tournament_selection(population, size=3) -> tuple[list[int], list[int]]:
 
     def select_best():
         """returns the cheapest set of routes from the tournament_group"""
-        group = random.sample(population, size)  # randomly select #size from population
+        max_size = min(size, len(population))
+        group = random.sample(population, max_size)  # randomly select #size from population
         winner = min(group, key=lambda x: x[0])  # pick the lowest total cost
         return winner[1]  # return only the routes
 
