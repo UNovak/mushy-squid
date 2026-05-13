@@ -22,16 +22,14 @@ def heuristic_matrix(data: Data, beta: float) -> np.ndarray:
     return a 2D matrix
     value: 1/(dist from i to j)^beta
     """
-
-    size = len(data.nodes)  # n + 1
+    size = len(data.nodes)
     matrix = np.zeros((size, size), dtype="f")
 
-    for i in range(size):
-        for j in range(size):
-            if data.distance[i, j] != 0:
-                # avoid division by 0
-                matrix[i, j] = float((1 / data.distance[i, j]) ** beta)
+    # create a matrix mask -> avoid division by 0
+    mask = data.distance != 0
 
+    # calculate heuristics where mask == True
+    matrix[mask] = (1.0 / data.distance[mask]) ** beta
     return matrix
 
 
@@ -41,14 +39,9 @@ def score_matrix(size: int, pheromones, heuristics, alpha: float) -> np.ndarray:
     value: (pheromone^alpha) * heuristic
     """
 
-    matrix = np.zeros((size, size), dtype="f")
-
-    for i in range(size):
-        for j in range(size):
-            matrix[i, j] = (pheromones[i, j] ** alpha) * heuristics[i, j]
-
+    matrix = (pheromones**alpha) * heuristics
     np.clip(matrix, 0.001, None, out=matrix)
-    return matrix
+    return matrix.astype("f")
 
 
 def next_node(current, available, scores) -> int:
