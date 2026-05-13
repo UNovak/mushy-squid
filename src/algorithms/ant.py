@@ -33,7 +33,7 @@ def heuristic_matrix(data: Data, beta: float) -> np.ndarray:
     return matrix
 
 
-def score_matrix(size: int, pheromones, heuristics, alpha: float) -> np.ndarray:
+def score_matrix(pheromones, heuristics, alpha: float) -> np.ndarray:
     """
     return a 2D matrix
     value: (pheromone^alpha) * heuristic
@@ -99,7 +99,7 @@ def update_pheromones(data: Data, pheromones: np.ndarray, ants, evaporation=0.2)
     pheromones *= 1 - evaporation
 
     # deposit — each ant reinforces its path
-    for cost, seq in ants:
+    for _, seq in ants:
         for i in range(len(seq) - 1):
             a, b = seq[i], seq[i + 1]
             deposit = 10 / data.distance[a, b]  # distance[a,b] symmetric to distance[b,a]
@@ -133,18 +133,18 @@ def hybrid(
         heuristics = heuristic_matrix(data, beta)
 
     # compute score matrix
-    scores = score_matrix(size, pheromones, heuristics, alpha)
+    scores = score_matrix(pheromones, heuristics, alpha)
 
     # main loop
-    for iteration in range(iterations):
-        ants = []
-        for ant in range(ant_count):
+    for _ in range(iterations):
+        ants: list[tuple[int, list[int]]] = []
+        for _ in range(ant_count):
             ant = traverse(data, scores)
             ants.append(ant)
 
         # update pheromone matrix and the scores matrix
         pheromones = update_pheromones(data, pheromones, ants)
-        scores = score_matrix(size, pheromones, heuristics, alpha)
+        scores = score_matrix(pheromones, heuristics, alpha)
 
     # sort ants by cost
     ants.sort(key=lambda x: x[0])
@@ -161,18 +161,18 @@ def run(data: Data, iterations: int = 100, alpha: float = 0.5, beta: float = 1.0
     # Initialize matrices
     pheromones = pheromone_matrix(size)
     heuristics = heuristic_matrix(data, beta)
-    scores = score_matrix(size, pheromones, heuristics, alpha)
+    scores = score_matrix(pheromones, heuristics, alpha)
 
     # main loop
     for iteration in range(iterations):
         ants: list[tuple[int, list[int]]] = []
-        for ant in range(ant_count):
+        for _ in range(ant_count):
             ant = traverse(data, scores)  # [cost, [1,2,5,3,1,7,8,4,1]]
             ants.append(ant)
 
         # update pheromone matrix and the scores matrix
         pheromones = update_pheromones(data, pheromones, ants)
-        scores = score_matrix(size, pheromones, heuristics, alpha)
+        scores = score_matrix(pheromones, heuristics, alpha)
 
         # sort ants by cost
         ants.sort(key=lambda x: x[0])
