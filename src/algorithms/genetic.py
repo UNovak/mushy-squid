@@ -30,7 +30,7 @@ def generate_individual(data: Data) -> list[int]:
     return seq
 
 
-def mutate(data, seq: list[int], rate) -> list[int]:
+def mutate(seq: list[int], rate) -> list[int]:
     """
     Takes a sequence and mutates it.
     Returns the new sequence [2,5,3,4,6]
@@ -123,7 +123,7 @@ def hybrid(
         for _ in range(population_size - elite_count):
             p1, p2 = tournament_selection(population, tournament_size)
             child_seq = crossover(data, p1, p2)  # create a new solution
-            child = mutate(data, child_seq, mutation_rate)  # mutate the solution
+            child = mutate(child_seq, mutation_rate)  # mutate the solution
             child = validate_seq(data, child)  # fix the solution, calculate cost
             next_gen.append(child)
 
@@ -165,7 +165,7 @@ def run(data: Data, iterations: int = 100, tournament_size=3, mutation_rate: flo
         for _ in range(population_size - elite_count):
             p1, p2 = tournament_selection(population, tournament_size)
             child_seq = crossover(data, p1, p2)  # create a new solution
-            child = mutate(data, child_seq, mutation_rate)  # mutate the solution
+            child = mutate(child_seq, mutation_rate)  # mutate the solution
             child = validate_seq(data, child)  # fix the solution, calculate cost
             next_gen.append(child)
 
