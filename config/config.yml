@@ -1,9 +1,9 @@
-seed: 100
-iterations: 100
+seed:
+iterations: 1000
 
 ga:
   tournament_size: 3
-  mutation_rate: 0.6
+  mutation_rate: 0.3
 
 ac:
   alpha: 1.0

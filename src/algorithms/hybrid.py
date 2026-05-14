@@ -17,7 +17,7 @@ def run(data: Data, ga: dict, ac: dict, iterations: int = 100, step: int = 10):
     # store initial best (iteration 0)
     if validate_solution(data, int(best_cost), best_seq):
         elapsed_time = perf_counter() - started_at
-        solutions.append((int(best_cost), best_seq, elapsed_time, 0, 0.0))
+        solutions.append((int(best_cost), best_seq, elapsed_time, 0))
 
     completed_iterations = step
 

@@ -153,7 +153,7 @@ def run(data: Data, iterations: int = 100, tournament_size=3, mutation_rate: flo
     # store the best solution
     min_cost, seq = population[0]
     elapsed_time = perf_counter() - started_at
-    solutions.append((min_cost, seq, elapsed_time, 0, 0.0))
+    solutions.append((min_cost, seq, elapsed_time, 0))
 
     # main loop
     for iteration in range(iterations - 1):
