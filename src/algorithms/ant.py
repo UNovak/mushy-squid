@@ -3,8 +3,8 @@ import random
 
 import numpy as np
 
-from utils.helpers import timer
-from utils.models import Data, Solution
+from utils.helpers import validate_solution
+from utils.models import Data
 
 
 def pheromone_matrix(size: int) -> np.ndarray:
@@ -151,7 +151,6 @@ def hybrid(
     return ants[: int(len(ants) / 2)], pheromones, heuristics
 
 
-@timer
 def run(data: Data, iterations: int = 100, alpha: float = 0.5, beta: float = 1.0):
     size = len(data.nodes)
     ant_count = math.floor(data.dimension / 2)

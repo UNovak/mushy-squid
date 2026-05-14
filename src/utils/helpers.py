@@ -1,6 +1,3 @@
-from functools import wraps
-from time import time
-
 from utils.models import Data
 
 
@@ -27,15 +24,3 @@ def validate_solution(data: Data, cost: int, seq: list[int]) -> bool:
     )
 
     return True
-
-
-def timer(func):
-    @wraps(func)
-    def wrap_func(*args, **kwargs):
-        t1 = time()
-        result = func(*args, **kwargs)
-        t2 = time()
-        print(f"{func.__module__}.{func.__name__!r} executed in {(t2 - t1):.6f}s")
-        return result
-
-    return wrap_func
