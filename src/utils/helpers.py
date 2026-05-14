@@ -1,14 +1,12 @@
 from functools import wraps
 from time import time
 
-from utils.models import Data, Solution
+from utils.models import Data
 
 
-def validate_solution(data: Data, solution: Solution) -> Solution:
-    seq_cost = solution.cost
-    seq = solution.seq
+def validate_solution(data: Data, cost: int, seq: list[int]) -> bool:
     visited = set()
-    cost = 0
+    new_cost = 0
     cap = data.capacity
     prev = data.depot_id
 
@@ -20,13 +18,15 @@ def validate_solution(data: Data, solution: Solution) -> Solution:
             cap -= data.demands[id]
         else:
             cap = data.capacity
-        cost += data.distance[prev, id]
+        new_cost += data.distance[prev, id]
         prev = id
 
     assert visited == set(data.ids), f"Unvisited nodes: {set(data.ids) - visited}"
-    assert round(cost) == round(seq_cost), f"Cost mismatch: stored={seq_cost}, computed={cost}\n"
+    assert round(cost) == round(new_cost), (
+        f"Cost mismatch: from_algorithm={cost}, computed={new_cost}\n"
+    )
 
-    return solution
+    return True
 
 
 def timer(func):
