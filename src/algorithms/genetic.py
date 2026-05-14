@@ -1,5 +1,6 @@
 import math
 import random
+from time import perf_counter
 
 from utils.ga_helpers import validate_seq
 from utils.models import Data
@@ -133,8 +134,9 @@ def hybrid(
 
 
 def run(data: Data, iterations: int = 100, tournament_size=3, mutation_rate: float = 0.3):
+    started_at = perf_counter()
     population: list[tuple[int, list[int]]] = []
-    tracker = []  # keep track of optimal solutions
+    solutions = []  # keep track best solutions
 
     # scale the population size based on input
     population_size = math.floor((data.dimension / 2))
@@ -149,7 +151,9 @@ def run(data: Data, iterations: int = 100, tournament_size=3, mutation_rate: flo
     population.sort(key=lambda x: x[0])
 
     # store the best solution
-    min_cost = population[0][0]
+    min_cost, seq = population[0]
+    elapsed_time = perf_counter() - started_at
+    solutions.append((min_cost, seq, elapsed_time, 0, 0.0))
 
     # main loop
     for iteration in range(iterations - 1):
@@ -172,7 +176,16 @@ def run(data: Data, iterations: int = 100, tournament_size=3, mutation_rate: flo
 
         # check for new best solution
         if population[0][0] < min_cost:
-            min_cost = population[0][0]  # update min_cost
-            tracker.append((iteration, population[0]))  # store current best solution
+            cost, seq = population[0]  # extract population best
+            elapsed_time = perf_counter() - started_at
+            solutions.append((cost, seq, elapsed_time, iteration))
+            min_cost = cost  # update min_cost
 
-    return Solution(population[0][0], population[0][1])
+    # algorithm finished running construct metadata
+    metadata = {
+        "iteration_limit": iterations,
+        "algorithm_type": "GA",
+        "total_time": perf_counter() - started_at,
+    }
+
+    return solutions, metadata
