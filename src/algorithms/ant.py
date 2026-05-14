@@ -1,5 +1,6 @@
 import math
 import random
+from time import perf_counter
 
 import numpy as np
 
@@ -152,9 +153,10 @@ def hybrid(
 
 
 def run(data: Data, iterations: int = 100, alpha: float = 0.5, beta: float = 1.0):
+    started_at = perf_counter()
+    solutions = []
     size = len(data.nodes)
     ant_count = math.floor(data.dimension / 2)
-    top_ant: tuple[float, list[int]] | None = None
     min_cost = float("inf")
 
     # Initialize matrices
@@ -175,14 +177,20 @@ def run(data: Data, iterations: int = 100, alpha: float = 0.5, beta: float = 1.0
 
         # sort ants by cost
         ants.sort(key=lambda x: x[0])
+        ant_cost = ants[0][0]
+        ant_seq = ants[0][1]
 
         # check for new best solution
-        if ants[0][0] < min_cost:
-            min_cost = ants[0][0]  # update min_cost
-            top_ant = ants[0]  # update best solution
+        if ant_cost < min_cost and validate_solution(data, ant_cost, ant_seq):
+            elapsed_time = perf_counter() - started_at
+            solutions.append((ant_cost, ant_seq, elapsed_time, iteration))
+            min_cost = ant_cost  # update
 
-    # after all iterations return the top ant
-    # transform ant to Solution
-    assert top_ant is not None
+    # algorithm finished running construct metadata
+    metadata = {
+        "iteration_limit": iterations,
+        "algorithm_type": "AC",
+        "total_time": perf_counter() - started_at,
+    }
 
-    return Solution(top_ant[0], top_ant[1], "AC")
+    return solutions, metadata
