@@ -119,7 +119,7 @@ def hybrid(
     beta: float = 1.0,
     pheromones: np.ndarray | None = None,
     heuristics: np.ndarray | None = None,
-) -> tuple[list[tuple[float, list[int]]], np.ndarray, np.ndarray]:
+) -> tuple[list[tuple[int, list[int]]], np.ndarray, np.ndarray]:
     """returns better half of sorted an and pheromone matrix"""
     size = len(data.nodes)
     ant_count = math.floor(data.dimension / 2)
